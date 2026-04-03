@@ -12,6 +12,15 @@ interface BlogCardProps {
   index: number
 }
 
+// Returns true if published within the last 14 days
+function isNew(publishedDate: string): boolean {
+  const published = new Date(publishedDate)
+  const now = new Date()
+  const diffMs = now.getTime() - published.getTime()
+  const diffDays = diffMs / (1000 * 60 * 60 * 24)
+  return diffDays <= 14
+}
+
 export function BlogCard({ article, index }: BlogCardProps) {
   const router = useRouter()
   const [transitioning, setTransitioning] = useState(false)
@@ -31,8 +40,8 @@ export function BlogCard({ article, index }: BlogCardProps) {
     .join("")
     .toUpperCase()
 
-  // Alternate: even-indexed cards slide from left, odd from right
   const slideFrom = index % 2 === 0 ? -40 : 40
+  const articleIsNew = isNew(article.publishedDate)
 
   return (
     <>
@@ -51,7 +60,7 @@ export function BlogCard({ article, index }: BlogCardProps) {
             ? "0 8px 40px rgba(123,108,217,0.18), 0 2px 8px rgba(0,0,0,0.06)"
             : "0 1px 4px rgba(0,0,0,0.05)",
           transition: "box-shadow 0.3s ease, transform 0.3s ease",
-          transform: hovered ? "translateY(-3px)" : "translateY(0px)",
+          transform: hovered ? "translateY(-4px)" : "translateY(0px)",
         }}
         onClick={handleReadArticle}
       >
@@ -76,13 +85,23 @@ export function BlogCard({ article, index }: BlogCardProps) {
           />
 
           <div>
-            {/* Category */}
-            <span
-              className="text-xs font-semibold tracking-widest uppercase transition-colors duration-300"
-              style={{ color: hovered ? "#D288F2" : "#7B6CD9" }}
-            >
-              {article.category}
-            </span>
+            {/* Category + NEW badge row */}
+            <div className="flex items-center gap-2">
+              <span
+                className="text-xs font-semibold tracking-widest uppercase transition-colors duration-300"
+                style={{ color: hovered ? "#D288F2" : "#7B6CD9" }}
+              >
+                {article.category}
+              </span>
+              {articleIsNew && (
+                <span
+                  className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded"
+                  style={{ background: "#534AB7", color: "#fff" }}
+                >
+                  New
+                </span>
+              )}
+            </div>
 
             {/* Title */}
             <h2 className="mt-2 text-lg md:text-xl font-semibold text-white leading-snug">
@@ -157,30 +176,60 @@ export function BlogCard({ article, index }: BlogCardProps) {
             )}
           </div>
 
-          {/* Author */}
-          <div className="mt-4 flex items-center gap-2.5">
-            <div
-              className="relative w-9 h-9 rounded-full overflow-hidden flex items-center justify-center shrink-0 transition-colors duration-300"
-              style={{ background: hovered ? "#6b5bc8" : "#7B6CD9" }}
-            >
-              {article.author.image ? (
-                <Image
-                  src={article.author.image}
-                  alt={article.author.name}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <span className="text-white text-xs font-semibold">{initials}</span>
-              )}
+          {/* Author + read time */}
+          <div className="mt-4 flex flex-col gap-2.5">
+            <div className="flex items-center gap-2.5">
+              <div
+                className="relative w-9 h-9 rounded-full overflow-hidden flex items-center justify-center shrink-0 transition-colors duration-300"
+                style={{ background: hovered ? "#6b5bc8" : "#7B6CD9" }}
+              >
+                {article.author.image ? (
+                  <Image
+                    src={article.author.image}
+                    alt={article.author.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="text-white text-xs font-semibold">{initials}</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-[#010D26] truncate">
+                  {article.author.name}
+                </p>
+                <p className="text-[10px] text-[#6b7a8d] truncate leading-tight mt-0.5">
+                  {article.author.designation}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#010D26] truncate">
-                {article.author.name}
-              </p>
-              <p className="text-[10px] text-[#6b7a8d] truncate leading-tight mt-0.5">
-                {article.author.designation}
-              </p>
+
+            {/* Read time chip */}
+            <div
+              className="flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full"
+              style={{
+                background: hovered ? "rgba(127,108,217,0.12)" : "rgba(127,108,217,0.07)",
+                transition: "background 0.3s ease",
+              }}
+            >
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#7B6CD9"
+                strokeWidth={2.2}
+                strokeLinecap="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: "#7B6CD9" }}
+              >
+                {article.readTime}
+              </span>
             </div>
           </div>
         </div>
