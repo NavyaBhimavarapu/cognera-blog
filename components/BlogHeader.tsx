@@ -1,85 +1,11 @@
 "use client"
 
-import { motion, useInView } from "framer-motion"
+import { motion } from "framer-motion"
 import Image from "next/image"
-import { useState, useRef, useEffect } from "react"
-import { articles } from "@/data/articles"
-
-// Count-up hook — animates from 0 to `target` when `trigger` becomes true
-function useCountUp(target: number, trigger: boolean, duration = 1200) {
-  const [value, setValue] = useState(0)
-
-  useEffect(() => {
-    if (!trigger) return
-
-    // Respect prefers-reduced-motion
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (prefersReduced) {
-      setValue(target)
-      return
-    }
-
-    let startTime: number | null = null
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp
-      const progress = Math.min((timestamp - startTime) / duration, 1)
-      // Ease-out cubic
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setValue(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [trigger, target, duration])
-
-  return value
-}
-
-function StatItem({
-  value,
-  label,
-  trigger,
-  isLast,
-}: {
-  value: number
-  label: string
-  trigger: boolean
-  isLast: boolean
-}) {
-  const count = useCountUp(value, trigger)
-
-  return (
-    <div
-      className={`px-6 text-center first:pl-0 last:pr-0 flex flex-col items-center ${
-        !isLast ? "border-r border-[#7B6CD9]/20" : ""
-      }`}
-    >
-      <p className="text-2xl font-bold tabular-nums" style={{ color: "#7B6CD9" }}>
-        {count}
-      </p>
-      <p className="text-[10px] tracking-widest text-[#344859]/60 uppercase mt-0.5">
-        {label}
-      </p>
-    </div>
-  )
-}
+import { useState } from "react"
 
 export function BlogHeader() {
   const [logoFailed, setLogoFailed] = useState(false)
-
-  // Dynamic counts derived from articles data
-  const totalArticles = articles.length
-  const totalCategories = new Set(articles.map((a) => a.category)).size
-  const totalAuthors = new Set(articles.map((a) => a.author.name)).size
-
-  // Trigger count-up when stats row scrolls into view
-  const statsRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(statsRef, { once: true, margin: "-40px" })
-
-  const stats = [
-    { value: totalArticles, label: "Articles" },
-    { value: totalCategories, label: "Categories" },
-    { value: totalAuthors, label: "Authors" },
-  ]
 
   return (
     <header className="relative py-16 md:py-24 overflow-hidden bg-[#F5F7FA]">
@@ -171,6 +97,7 @@ export function BlogHeader() {
             className="mb-5"
           >
             <div className="relative w-14 h-14 md:w-16 md:h-16">
+              {/* Soft glow ring behind logo */}
               <div
                 className="absolute rounded-full pointer-events-none"
                 style={{
@@ -178,6 +105,7 @@ export function BlogHeader() {
                   background: "radial-gradient(circle, rgba(210,136,242,0.3) 0%, transparent 65%)",
                 }}
               />
+              {/* Real logo — shown when image loads */}
               {!logoFailed && (
                 <Image
                   src="/images/icon.png"
@@ -187,6 +115,7 @@ export function BlogHeader() {
                   onError={() => setLogoFailed(true)}
                 />
               )}
+              {/* Fallback — only shown when image actually fails */}
               {logoFailed && (
                 <div className="absolute inset-0 rounded-full border-2 border-[#7B6CD9]/60 flex items-center justify-center bg-white/50 z-10">
                   <span className="text-[#7B6CD9] text-sm font-bold">C</span>
@@ -238,22 +167,24 @@ export function BlogHeader() {
             Exploring digital analytics and privacy-first data solutions
           </motion.p>
 
-          {/* Stats row — count-up triggers on scroll into view */}
+          {/* Stats row */}
           <motion.div
-            ref={statsRef}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.4 }}
-            className="flex items-center mt-8"
+            className="flex items-center mt-8 divide-x divide-[#7B6CD9]/20"
           >
-            {stats.map((stat, i) => (
-              <StatItem
-                key={stat.label}
-                value={stat.value}
-                label={stat.label}
-                trigger={inView}
-                isLast={i === stats.length - 1}
-              />
+            {[
+              { value: "8", label: "Articles" },
+              { value: "3", label: "Categories" },
+              { value: "4", label: "Authors" },
+            ].map((stat, i) => (
+              <div key={i} className="px-6 text-center first:pl-0 last:pr-0">
+                <p className="text-2xl font-bold text-[#270F59]">{stat.value}</p>
+                <p className="text-[10px] tracking-widest text-[#344859]/60 uppercase mt-0.5">
+                  {stat.label}
+                </p>
+              </div>
             ))}
           </motion.div>
 

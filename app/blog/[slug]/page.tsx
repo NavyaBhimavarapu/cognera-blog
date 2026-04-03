@@ -1,34 +1,32 @@
 "use client"
-
+ 
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { articles } from "@/data/articles"
-import { ReadingProgress } from "@/components/ReadingProgress"
-
+ 
 interface ArticlePageProps {
   params: { slug: string }
 }
-
+ 
 export default function ArticlePage({ params }: ArticlePageProps) {
   const router = useRouter()
   const article = articles.find((a) => a.slug === params.slug)
-
   if (!article) notFound()
-
+ 
   const initials = article.author.name
     .split(" ")
     .map((n) => n[0])
     .slice(0, 2)
     .join("")
     .toUpperCase()
-
+ 
   const paragraphs = article.content
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean)
-
+ 
   return (
     <motion.div
       className="min-h-screen flex flex-col"
@@ -36,90 +34,112 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <ReadingProgress />
-
-      {/* Two-column layout — right dark bg extends full height via absolute fill */}
       <div className="flex flex-col md:flex-row flex-1 min-h-screen">
-
-        {/* ── LEFT: Article content ── */}
-        <article className="flex-1 md:w-[70%] bg-[#F5F7FA] px-6 md:px-12 lg:px-20 py-12 md:py-16">
-
+ 
+        {/* ═══════════════════════════════════════
+            LEFT 70% — Article content
+        ═══════════════════════════════════════ */}
+        <article className="flex-1 md:w-[70%] bg-[#F5F7FA] px-6 md:px-12 lg:px-20 py-10 md:py-14">
+ 
+          {/* Back button */}
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm font-medium transition-all duration-200 group mb-10"
+            className="flex items-center gap-2 text-sm font-medium mb-10 group"
             style={{
               background: "#101C26",
               border: "1px solid rgba(123,108,217,0.3)",
               borderRadius: "999px",
               padding: "7px 18px 7px 14px",
               color: "#8a9bb0",
+              transition: "border-color 0.2s, color 0.2s",
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "#7B6CD9"
+              ;(e.currentTarget as HTMLButtonElement).style.borderColor = "#7B6CD9"
               ;(e.currentTarget as HTMLButtonElement).style.color = "#fff"
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(123,108,217,0.3)"
+              ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(123,108,217,0.3)"
               ;(e.currentTarget as HTMLButtonElement).style.color = "#8a9bb0"
             }}
           >
             <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span>
             Back to Blog
           </button>
-
-          <motion.span
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-[#7B6CD9] uppercase"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#7B6CD9] inline-block" />
-            {article.category}
-          </motion.span>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-4 text-3xl md:text-4xl lg:text-5xl font-bold text-[#010D26] leading-[1.15] tracking-tight max-w-2xl"
-          >
-            {article.title}
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="mt-6 text-lg text-[#344859] leading-relaxed max-w-xl"
-            style={{
-              borderLeft: "3px solid #7B6CD9",
-              paddingLeft: "18px",
-            }}
-          >
-            {article.excerpt}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
-            className="mt-10 mb-10 h-px max-w-2xl origin-left"
-            style={{ background: "linear-gradient(to right, rgba(123,108,217,0.3), transparent)" }}
-          />
-
+ 
+          {/* ── Title Box — LIGHT ── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="max-w-2xl space-y-7"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="relative rounded-2xl overflow-hidden mb-10"
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e4e8ef",
+              boxShadow: "0 2px 20px rgba(123,108,217,0.08)",
+            }}
+          >
+            {/* Left accent bar */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, bottom: 0, width: "4px",
+              background: "linear-gradient(to bottom, #D288F2, #7B6CD9, #23518C)",
+            }} />
+ 
+            {/* Subtle orb top-right */}
+            <div style={{
+              position: "absolute", top: -30, right: -30,
+              width: 180, height: 180, borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(210,136,242,0.07) 0%, transparent 70%)",
+              pointerEvents: "none",
+            }} />
+ 
+            <div className="px-8 py-8 pl-10">
+              {/* Category pill */}
+              <span
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] uppercase px-3 py-1 rounded-full mb-4"
+                style={{
+                  background: "rgba(123,108,217,0.1)",
+                  border: "1px solid rgba(123,108,217,0.25)",
+                  color: "#7B6CD9",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#7B6CD9] inline-block" />
+                {article.category}
+              </span>
+ 
+              {/* Title */}
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#010D26] leading-[1.2] tracking-tight max-w-2xl">
+                {article.title}
+              </h1>
+ 
+              {/* Excerpt */}
+              <p
+                className="mt-4 text-[#344859] text-sm md:text-base leading-relaxed max-w-xl"
+                style={{
+                  borderLeft: "2px solid rgba(123,108,217,0.4)",
+                  paddingLeft: "14px",
+                }}
+              >
+                {article.excerpt}
+              </p>
+ 
+ 
+            </div>
+          </motion.div>
+ 
+          {/* ── Article body ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="max-w-2xl space-y-6"
           >
             {paragraphs.map((para, i) => (
               <p
                 key={i}
                 style={{
-                  fontSize: i === 0 ? "18px" : "17px",
+                  fontSize: i === 0 ? "18px" : "16px",
                   fontWeight: i === 0 ? 450 : 400,
-                  color: i === 0 ? "#0f1e2e" : "#1a2a3a",
+                  color: i === 0 ? "#0f1e2e" : "#1e2e3e",
                   lineHeight: 1.9,
                 }}
               >
@@ -127,18 +147,19 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </p>
             ))}
           </motion.div>
-
+ 
+          {/* End ornament */}
           <div className="mt-16 flex items-center gap-4 max-w-2xl">
             <div className="flex-1 h-px" style={{ background: "rgba(123,108,217,0.2)" }} />
             <div className="flex items-center gap-1.5">
-              <div className="w-1 h-1 rounded-full bg-[#7B6CD9] opacity-60" />
+              <div className="w-1 h-1 rounded-full bg-[#7B6CD9] opacity-50" />
               <div className="w-1.5 h-1.5 rounded-full bg-[#7B6CD9]" />
-              <div className="w-1 h-1 rounded-full bg-[#7B6CD9] opacity-60" />
+              <div className="w-1 h-1 rounded-full bg-[#7B6CD9] opacity-50" />
             </div>
             <div className="flex-1 h-px" style={{ background: "rgba(123,108,217,0.2)" }} />
           </div>
-
         </article>
+ 
 
         {/* ── RIGHT: Full-height dark column ── */}
         <div className="md:w-[30%] relative">
