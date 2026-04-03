@@ -46,13 +46,13 @@ export const articles: Article[] = [
     title: "The Future of Privacy-First Analytics",
     excerpt:
       "Exploring how digital analytics is evolving to respect user privacy while delivering actionable insights.",
-    image: "",                        // ← paste cover image URL here
+    image: "/images/PA.jpg",                        // ← paste cover image URL here
     publishedDate: "March 28, 2026",
     readTime: "6 min read",
     author: {
       name: "Dr. S. Ravi Kumar",      // ← edit name
       designation: "Founder & Managing Director",
-      image: "",                      // ← paste author photo URL here
+      image: "/images/MD.png",                      // ← paste author photo URL here
     },
     content: `Privacy-first analytics is no longer a niche concern — it is rapidly becoming the standard for responsible digital businesses.
 
@@ -71,13 +71,13 @@ The tools are already here. Differential privacy, federated learning, and on-dev
     title: "Machine Learning in Data Privacy",
     excerpt:
       "How ML algorithms can enhance data protection while maintaining analytical capabilities.",
-    image: "",                        // ← paste cover image URL here
+    image: "/images/ML.jpg",                        // ← paste cover image URL here
     publishedDate: "March 20, 2026",
     readTime: "8 min read",
     author: {
       name: "Dr. B. Radhakrishna",
-      designation: "Chief Technology Officer",
-      image: "",                      // ← paste author photo URL here
+      designation: "Executive Director",
+      image: "/images/EG.png",                      // ← paste author photo URL here
     },
     content: `Machine learning and data privacy are often portrayed as opposing forces. One demands vast amounts of data; the other demands restraint in its collection and use.
 
